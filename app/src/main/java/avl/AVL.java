@@ -33,6 +33,7 @@ public class AVL {
     if (root == null) {
       root = new Node(w);
       size = 1;
+      //System.out.println("Root");
       return;
     }
     bstInsert(root, w);
@@ -41,7 +42,32 @@ public class AVL {
   /* insert w into the tree rooted at n, ignoring balance
    * pre: n is not null */
   private void bstInsert(Node n, String w) {
-    // TODO
+      if (w.length() == 0) {
+          return;
+      }
+      if (w.compareTo(n.word) < 0) {
+          if (n.left == null) {
+              n.left = new Node(w);
+              n.left.parent = n;
+              size++;
+              //System.out.println("Added word " + w);
+              //System.out.println("Increment size to " + size);
+              return;
+          }
+          bstInsert(n.left, w);
+      } else if (w.compareTo(n.word) > 0) {
+          if (n.right == null) {
+              n.right = new Node(w);
+              n.right.parent = n;
+              size++;
+              //System.out.println("Added word " + w);
+              //System.out.println("Increment size to " + size);
+              return;
+          }
+          bstInsert(n.right, w);
+      } else {
+          return;
+      }
   }
 
   /** insert w into the tree, maintaining AVL balance
@@ -136,4 +162,11 @@ public class AVL {
       right = r;
     }
   }
+    public static void main(String[] args) {
+        AVL a = new AVL();
+        a.bstInsert("moo");
+        a.bstInsert("neigh");
+        a.bstInsert("quack");
+
+    }
 }
