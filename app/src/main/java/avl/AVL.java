@@ -10,6 +10,33 @@ public class AVL {
     return size;
   }
 
+  public int getHeight() {
+      return getHeight(root);
+  }
+
+  public int getHeight(Node n) {
+      if (n == null) {
+          return -1;
+      }
+      return 1 + max(getHeight(n.left), getHeight(n.right));
+  }
+
+  public int max(int n1, int n2) {
+      if (n1 >= n2) {
+          return n1;
+      } else {
+          return n2;
+      }
+  }
+
+  public int getBalance() {
+      return getBalance(root);
+  }
+
+  public int getBalance(Node n) {
+      return getHeight(n.right) - getHeight(n.left);
+  }
+
   /** find w in the tree. return the node containing w or
   * null if not found */
   public Node search(String w) {
@@ -86,19 +113,67 @@ public class AVL {
   /** do a left rotation: rotate on the edge from x to its right child.
   *  precondition: x has a non-null right child */
   public void leftRotate(Node x) {
-    // TODO
+      Node y = x.right;
+      //x's right subtree becomes y's old left subtree
+      x.right = y.left;
+      if (y.left != null) {
+          y.left.parent = x;
+      }
+      //transfer parents, check for root
+      y.parent = x.parent;
+      if (x.parent == null) {
+          root = y;
+      } else if (x == x.parent.left) {//set x's old parent's left or right to y
+          x.parent.left = y;
+      } else {
+          x.parent.right = y;
+      }
+      y.left = x;
+      x.parent = y;
   }
 
   /** do a right rotation: rotate on the edge from x to its left child.
   *  precondition: y has a non-null left child */
   public void rightRotate(Node y) {
-    // TODO
+      Node x = y.left;
+      //y's left subtree becomes x's old right subtree
+      y.left = x.right;
+      if (x.right != null) {
+          x.right.parent = y;
+      }
+      //transfer parents, check for root
+      x.parent = y.parent;
+      if (y.parent == null) {
+          root = x;
+      } else if (y == y.parent.right) {//set y's old parent's left or right to x
+          y.parent.right = x;
+      } else {
+          y.parent.left = x;
+      }
+      x.right = y;
+      y.parent = x;
   }
 
   /** rebalance a node N after a potentially AVL-violoting insertion.
   *  precondition: none of n's descendants violates the AVL property */
   public void rebalance(Node n) {
-    // TODO
+      if (getBalance(n) < -1) {  //imbalance on left side of tree
+          if (getBalance(n.left) < 0) {
+              //if node was added to left child's left
+              rightRotate(n);
+          } else {
+              //if node was added to left child's right
+              leftRotate(n.left);
+              rightRotate(n);
+          }
+      } else if (getBalance(n) > 1) { //imbalance on right side of tree
+          if (getBalance(n.right) > 0) {
+              leftRotate(n);
+          } else {
+              rightRotate(n.right);
+              leftRotate(n);
+          }
+      }
   }
 
   /** remove the word w from the tree */
@@ -167,6 +242,6 @@ public class AVL {
         a.bstInsert("moo");
         a.bstInsert("neigh");
         a.bstInsert("quack");
-
+        System.out.println(a.getHeight());
     }
 }
