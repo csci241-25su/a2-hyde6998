@@ -1,5 +1,7 @@
 package avl;
-
+/* Author: Kevon Hyde
+ * Date: 07/14/2025
+ * Description: This program can either generate a given search tree */
 public class AVL {
 
   public Node root;
@@ -7,21 +9,33 @@ public class AVL {
   private int size;
 
   public int getSize() {
-    return size;
+      return size;
   }
 
+  /** return height of the tree */
   public int getHeight() {
       return getHeight(root);
   }
 
-  public int getHeight(Node n) {
+  /** return height of given subtree */
+  private int getHeight(Node n) {
       if (n == null) {
           return -1;
       }
       return 1 + max(getHeight(n.left), getHeight(n.right));
   }
 
-  public int max(int n1, int n2) {
+  /** helper method that recursiely updates the height of a given node and
+  * its ancestors */
+  private void updateHeight(Node n) {
+      n.height = getHeight(n);
+      if (n.parent != null) {
+          updateHeight(n.parent);
+      }
+  }
+
+  /** helper method that takes two ints and returns the greater value */
+  private int max(int n1, int n2) {
       if (n1 >= n2) {
           return n1;
       } else {
@@ -29,30 +43,31 @@ public class AVL {
       }
   }
 
-  public int getBalance() {
+  /** set of helper methods that return the balance factor of a node */
+  private int getBalance() {
       return getBalance(root);
   }
 
-  public int getBalance(Node n) {
+  private int getBalance(Node n) {
       return getHeight(n.right) - getHeight(n.left);
   }
 
   /** find w in the tree. return the node containing w or
   * null if not found */
   public Node search(String w) {
-    return search(root, w);
-  }
-  private Node search(Node n, String w) {
-    if (n == null) {
-      return null;
+      return search(root, w);
     }
-    if (w.equals(n.word)) {
-      return n;
-    } else if (w.compareTo(n.word) < 0) {
-      return search(n.left, w);
-    } else {
-      return search(n.right, w);
-    }
+    private Node search(Node n, String w) {
+      if (n == null) {
+        return null;
+      }
+      if (w.equals(n.word)) {
+        return n;
+      } else if (w.compareTo(n.word) < 0) {
+        return search(n.left, w);
+      } else {
+        return search(n.right, w);
+      }
   }
 
   /** insert w into the tree as a standard BST, ignoring balance */
@@ -60,7 +75,6 @@ public class AVL {
     if (root == null) {
       root = new Node(w);
       size = 1;
-      //System.out.println("Root");
       return;
     }
     bstInsert(root, w);
@@ -77,8 +91,7 @@ public class AVL {
               n.left = new Node(w);
               n.left.parent = n;
               size++;
-              //System.out.println("Added word " + w);
-              //System.out.println("Increment size to " + size);
+              updateHeight(n);
               return;
           }
           bstInsert(n.left, w);
@@ -87,8 +100,7 @@ public class AVL {
               n.right = new Node(w);
               n.right.parent = n;
               size++;
-              //System.out.println("Added word " + w);
-              //System.out.println("Increment size to " + size);
+              updateHeight(n);
               return;
           }
           bstInsert(n.right, w);
@@ -101,13 +113,41 @@ public class AVL {
   *  precondition: the tree is AVL balanced and any prior insertions have been
   *  performed by this method. */
   public void avlInsert(String w) {
-    // TODO
+      if (root == null) {
+          root = new Node(w);
+          size = 1;
+          return;
+      }
+      avlInsert(root, w);
   }
 
   /* insert w into the tree, maintaining AVL balance
    *  precondition: the tree is AVL balanced and n is not null */
   private void avlInsert(Node n, String w) {
-    // TODO
+      if (w.compareTo(n.word) < 0) {
+          if (n.left == null) {
+              n.left = new Node(w);
+              n.left.parent = n;
+              size++;
+              updateHeight(n);
+              return;
+          }
+        avlInsert(n.left, w);
+        rebalance(n);
+    } else if (w.compareTo(n.word) > 0) {
+          if (n.right == null) {
+              n.right = new Node(w);
+              n.right.parent = n;
+              size++;
+              updateHeight(n);
+              rebalance(n);
+              return;
+          }
+        avlInsert(n.right, w);
+        rebalance(n);
+    } else {
+        return;
+      }
   }
 
   /** do a left rotation: rotate on the edge from x to its right child.
@@ -130,6 +170,7 @@ public class AVL {
       }
       y.left = x;
       x.parent = y;
+      updateHeight(x);
   }
 
   /** do a right rotation: rotate on the edge from x to its left child.
@@ -152,6 +193,7 @@ public class AVL {
       }
       x.right = y;
       y.parent = x;
+      updateHeight(y);
   }
 
   /** rebalance a node N after a potentially AVL-violoting insertion.
@@ -239,9 +281,8 @@ public class AVL {
   }
     public static void main(String[] args) {
         AVL a = new AVL();
-        a.bstInsert("moo");
-        a.bstInsert("neigh");
-        a.bstInsert("quack");
-        System.out.println(a.getHeight());
+        a.avlInsert("a");
+        a.avlInsert("b");
+        a.avlInsert("c");
     }
 }
