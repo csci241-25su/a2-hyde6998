@@ -43,7 +43,8 @@ public class AVL {
       }
   }
 
-  /** set of helper methods that return the balance factor of a node */
+  /** set of helper methods that return the balance factor of a node
+  * if no input, then it takes the balance factor of the root instead */
   private int getBalance() {
       return getBalance(root);
   }
@@ -85,7 +86,7 @@ public class AVL {
   private void bstInsert(Node n, String w) {
       if (w.length() == 0) {
           return;
-      }
+      } //lexicographically compare words to see which ones are "greater" or "lesser"
       if (w.compareTo(n.word) < 0) {
           if (n.left == null) {
               n.left = new Node(w);
@@ -104,7 +105,7 @@ public class AVL {
               return;
           }
           bstInsert(n.right, w);
-      } else {
+      } else {  //if word is a duplicate, don't do anything
           return;
       }
   }
@@ -140,7 +141,6 @@ public class AVL {
               n.right.parent = n;
               size++;
               updateHeight(n);
-              rebalance(n);
               return;
           }
         avlInsert(n.right, w);
@@ -209,7 +209,7 @@ public class AVL {
               rightRotate(n);
           }
       } else if (getBalance(n) > 1) { //imbalance on right side of tree
-          if (getBalance(n.right) > 0) {
+          if (getBalance(n.right) > 0) {  //like first two cases in reverse
               leftRotate(n);
           } else {
               rightRotate(n.right);
